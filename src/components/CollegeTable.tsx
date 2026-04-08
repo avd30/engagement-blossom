@@ -74,11 +74,6 @@ export default function CollegeTable(props: CollegeTableProps) {
       {/* Desktop Table */}
       <div className="hidden sm:block overflow-x-auto">
         <table className="w-full border-collapse">
-          <colgroup>
-            <col className="w-9" /><col className="w-[180px]" /><col className="w-[100px]" />
-            <col className="w-[70px]" /><col className="w-[80px]" /><col className="w-[100px]" />
-            <col /><col className="w-[120px]" />
-          </colgroup>
           <thead>
             <tr>
               {['', 'College name', 'Stream', 'Tier', 'Timeline', 'Notes', 'Points of engagement', ''].map((h, i) => (
@@ -86,8 +81,8 @@ export default function CollegeTable(props: CollegeTableProps) {
               ))}
             </tr>
           </thead>
-          <tbody>
-            {filtered.length === 0 ? (
+          {filtered.length === 0 ? (
+            <tbody>
               <tr><td colSpan={8}>
                 <div className="text-center py-12 text-muted-foreground">
                   <div className="text-[15px] font-medium mb-[6px] text-foreground">No colleges found</div>
@@ -95,65 +90,65 @@ export default function CollegeTable(props: CollegeTableProps) {
                   <button onClick={onAddCollege} className="px-[14px] py-[7px] rounded-sm text-xs font-medium bg-primary text-primary-foreground border border-primary hover:bg-primary-dark">+ Add first college</button>
                 </div>
               </td></tr>
-            ) : filtered.map(c => {
-              const isExp = expandedRow === c.id;
-              const isPendDel = pendingDeleteCollege === c.id;
-              return (
-                <tbody key={c.id}>
-                  <tr className={isExp ? 'bg-toolbar' : 'hover:bg-toolbar'}>
-                    <td className="py-[10px] px-3 border-b border-border align-top">
-                      <button onClick={() => onToggleRow(c.id)} className="bg-transparent border-none text-text-hint text-[11px] p-[2px_4px] cursor-pointer rounded-[3px] hover:bg-border hover:text-foreground">{isExp ? '▼' : '►'}</button>
-                    </td>
-                    <td className="py-[10px] px-3 border-b border-border align-top cursor-pointer" onClick={() => onToggleRow(c.id)}>
-                      <div className="font-semibold text-[13px] mb-[2px]">{c.name}</div>
-                      {c.website && <a href={c.website} target="_blank" rel="noopener" onClick={e => e.stopPropagation()} className="text-[11px] text-primary no-underline hover:underline block">{c.website.replace(/https?:\/\//, '').split('/')[0]}</a>}
-                    </td>
-                    <td className="py-[10px] px-3 border-b border-border align-top"><StreamBadge stream={c.stream} /></td>
-                    <td className="py-[10px] px-3 border-b border-border align-top"><TierBadge tier={c.tier} /></td>
-                    <td className="py-[10px] px-3 border-b border-border align-top text-[11px] text-muted-foreground">{c.timeline || ''}</td>
-                    <td className="py-[10px] px-3 border-b border-border align-top"><div className="text-[11px] text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-[180px]" title={c.notes || ''}>{c.notes || '—'}</div></td>
-                    <td className="py-[10px] px-3 border-b border-border align-top">
-                      <div className="flex flex-wrap gap-1">
-                        {c.poes.map(p => <POEBadge key={p.id} poe={p} onClick={() => onSelectPOE(c.id, p.id)} />)}
-                        <button onClick={() => onAddPOE(c.id)} className="bg-background text-muted-foreground border border-dashed border-border rounded-[4px] text-[10px] px-[7px] py-[2px] cursor-pointer hover:border-primary-mid hover:text-primary">+ add</button>
-                      </div>
-                    </td>
-                    <td className="py-[10px] px-3 border-b border-border align-top">
-                      {isPendDel ? (
-                        <div className="flex flex-col items-start gap-[5px] bg-destructive-light border border-[#F09595] rounded-sm px-2 py-[6px]">
-                          <span className="text-[11px] text-destructive-dark font-semibold">Delete?</span>
-                          <div className="flex gap-1">
-                            <button onClick={() => onConfirmDeleteCollege(c.id)} className="bg-destructive text-primary-foreground border-destructive text-[11px] px-[10px] py-[3px] rounded-sm font-medium">Yes</button>
-                            <button onClick={onCancelDeleteCollege} className="px-[9px] py-[3px] rounded-sm text-[11px] font-medium border border-border bg-surface">No</button>
-                          </div>
-                        </div>
-                      ) : (
+            </tbody>
+          ) : filtered.map(c => {
+            const isExp = expandedRow === c.id;
+            const isPendDel = pendingDeleteCollege === c.id;
+            return (
+              <tbody key={c.id}>
+                <tr className={isExp ? 'bg-toolbar' : 'hover:bg-toolbar'}>
+                  <td className="py-[10px] px-3 border-b border-border align-top w-9">
+                    <button onClick={() => onToggleRow(c.id)} className="bg-transparent border-none text-text-hint text-[11px] p-[2px_4px] cursor-pointer rounded-[3px] hover:bg-border hover:text-foreground">{isExp ? '▼' : '►'}</button>
+                  </td>
+                  <td className="py-[10px] px-3 border-b border-border align-top cursor-pointer" onClick={() => onToggleRow(c.id)}>
+                    <div className="font-semibold text-[13px] mb-[2px]">{c.name}</div>
+                    {c.website && <a href={c.website} target="_blank" rel="noopener" onClick={e => e.stopPropagation()} className="text-[11px] text-primary no-underline hover:underline block">{c.website.replace(/https?:\/\//, '').split('/')[0]}</a>}
+                  </td>
+                  <td className="py-[10px] px-3 border-b border-border align-top"><StreamBadge stream={c.stream} /></td>
+                  <td className="py-[10px] px-3 border-b border-border align-top"><TierBadge tier={c.tier} /></td>
+                  <td className="py-[10px] px-3 border-b border-border align-top text-[11px] text-muted-foreground whitespace-nowrap">{c.timeline || ''}</td>
+                  <td className="py-[10px] px-3 border-b border-border align-top"><div className="text-[11px] text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]" title={c.notes || ''}>{c.notes || '—'}</div></td>
+                  <td className="py-[10px] px-3 border-b border-border align-top">
+                    <div className="flex flex-wrap gap-1">
+                      {c.poes.map(p => <POEBadge key={p.id} poe={p} onClick={() => onSelectPOE(c.id, p.id)} />)}
+                      <button onClick={() => onAddPOE(c.id)} className="bg-background text-muted-foreground border border-dashed border-border rounded-[4px] text-[10px] px-[7px] py-[2px] cursor-pointer hover:border-primary-mid hover:text-primary">+ add</button>
+                    </div>
+                  </td>
+                  <td className="py-[10px] px-3 border-b border-border align-top whitespace-nowrap">
+                    {isPendDel ? (
+                      <div className="flex flex-col items-start gap-[5px] bg-destructive-light border border-[#F09595] rounded-sm px-2 py-[6px]">
+                        <span className="text-[11px] text-destructive-dark font-semibold">Delete?</span>
                         <div className="flex gap-1">
-                          <button onClick={() => onEditCollege(c.id)} className="px-[9px] py-[3px] rounded-sm text-[11px] font-medium border border-border bg-surface text-foreground hover:bg-background hover:border-primary-mid">Edit</button>
-                          <button onClick={() => onAskDeleteCollege(c.id)} className="px-[9px] py-[3px] rounded-sm text-[11px] font-medium border border-[#F09595] bg-destructive-light text-destructive-dark hover:bg-[#F7C1C1]">Delete</button>
+                          <button onClick={() => onConfirmDeleteCollege(c.id)} className="bg-destructive text-primary-foreground border-destructive text-[11px] px-[10px] py-[3px] rounded-sm font-medium">Yes</button>
+                          <button onClick={onCancelDeleteCollege} className="px-[9px] py-[3px] rounded-sm text-[11px] font-medium border border-border bg-surface">No</button>
                         </div>
-                      )}
-                    </td>
-                  </tr>
-                  {isExp && (
-                    <tr><td colSpan={8} className="p-0 bg-[#f2f0fa] border-b border-border">
-                      <ExpandedRow
-                        college={c}
-                        selectedPoe={selectedPoe}
-                        pendingDeletePoe={pendingDeletePoe}
-                        onSelectPOE={onSelectPOE}
-                        onAddPOE={onAddPOE}
-                        onEditPOE={onEditPOE}
-                        onAskDeletePOE={onAskDeletePOE}
-                        onConfirmDeletePOE={onConfirmDeletePOE}
-                        onCancelDeletePOE={onCancelDeletePOE}
-                      />
-                    </td></tr>
-                  )}
-                </tbody>
-              );
-            })}
-          </tbody>
+                      </div>
+                    ) : (
+                      <div className="flex gap-1">
+                        <button onClick={() => onEditCollege(c.id)} className="px-[9px] py-[3px] rounded-sm text-[11px] font-medium border border-border bg-surface text-foreground hover:bg-background hover:border-primary-mid">Edit</button>
+                        <button onClick={() => onAskDeleteCollege(c.id)} className="px-[9px] py-[3px] rounded-sm text-[11px] font-medium border border-[#F09595] bg-destructive-light text-destructive-dark hover:bg-[#F7C1C1]">Delete</button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+                {isExp && (
+                  <tr><td colSpan={8} className="p-0 bg-[#f2f0fa] border-b border-border">
+                    <ExpandedRow
+                      college={c}
+                      selectedPoe={selectedPoe}
+                      pendingDeletePoe={pendingDeletePoe}
+                      onSelectPOE={onSelectPOE}
+                      onAddPOE={onAddPOE}
+                      onEditPOE={onEditPOE}
+                      onAskDeletePOE={onAskDeletePOE}
+                      onConfirmDeletePOE={onConfirmDeletePOE}
+                      onCancelDeletePOE={onCancelDeletePOE}
+                    />
+                  </td></tr>
+                )}
+              </tbody>
+            );
+          })}
         </table>
       </div>
 
