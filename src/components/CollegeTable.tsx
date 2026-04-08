@@ -235,5 +235,3 @@ export default function CollegeTable(props: CollegeTableProps) {
   );
 }
 
-// Need to import POEDetail for mobile view
-import POEDetail from './POEDetail';
