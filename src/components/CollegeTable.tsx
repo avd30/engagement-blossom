@@ -149,7 +149,6 @@ export default function CollegeTable(props: CollegeTableProps) {
               </tbody>
             );
           })}
-          </tbody>
         </table>
       </div>
 
