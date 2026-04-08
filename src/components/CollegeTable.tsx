@@ -73,11 +73,11 @@ export default function CollegeTable(props: CollegeTableProps) {
 
       {/* Desktop Table */}
       <div className="hidden sm:block overflow-x-auto">
-        <table className="w-full border-collapse table-fixed">
+        <table className="w-full border-collapse">
           <colgroup>
-            <col className="w-9" /><col className="w-[200px]" /><col className="w-[110px]" />
-            <col className="w-[70px]" /><col className="w-[90px]" /><col className="w-[180px]" />
-            <col /><col className="w-[110px]" />
+            <col className="w-9" /><col className="w-[180px]" /><col className="w-[100px]" />
+            <col className="w-[70px]" /><col className="w-[80px]" /><col className="w-[100px]" />
+            <col /><col className="w-[120px]" />
           </colgroup>
           <thead>
             <tr>

@@ -36,7 +36,7 @@ export default function POEDetail({ poe, onEdit, onAskDelete, onConfirmDelete, o
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-[10px] mb-[10px]">
         <div><div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mb-[3px]">Date</div><div className="text-xs">{poe.date ? formatDate(poe.date) : '—'}</div></div>
         <div><div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mb-[3px]">POC name</div><div className="text-xs">{poe.pocName || '—'}</div></div>
-        <div><div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mb-[3px]">POC email</div><div className="text-xs">{poe.pocEmail ? <a href={`mailto:${poe.pocEmail}`} className="text-primary no-underline hover:underline">{poe.pocEmail}</a> : '—'}</div></div>
+        <div className="overflow-hidden"><div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mb-[3px]">POC email</div><div className="text-xs truncate">{poe.pocEmail ? <a href={`mailto:${poe.pocEmail}`} className="text-primary no-underline hover:underline">{poe.pocEmail}</a> : '—'}</div></div>
         <div><div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mb-[3px]">POC phone</div><div className="text-xs">{poe.pocPhone || '—'}</div></div>
         <div className="sm:col-span-2"><div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wide mb-[3px]">Event link</div><div className="text-xs">{poe.link ? <a href={poe.link} target="_blank" rel="noopener" className="text-primary no-underline hover:underline">{poe.link}</a> : '—'}</div></div>
       </div>

@@ -57,6 +57,9 @@ const Index = () => {
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
     ws['!cols'] = [22, 14, 10, 30, 12, 30, 20, 16, 24, 12, 30, 18, 24, 14, 30].map(w => ({ wch: w }));
+    // Add table formatting
+    const ref = XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: rows.length, c: headers.length - 1 } });
+    if (!ws['!autofilter']) ws['!autofilter'] = { ref };
     XLSX.utils.book_append_sheet(wb, ws, 'Campus Engagements');
     XLSX.writeFile(wb, `campusconnect-${new Date().toISOString().slice(0, 10)}.xlsx`);
     store.toast('Excel file exported');
