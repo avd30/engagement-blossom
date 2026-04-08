@@ -3,6 +3,7 @@ import StreamBadge from './StreamBadge';
 import TierBadge from './TierBadge';
 import POEBadge from './POEBadge';
 import ExpandedRow from './ExpandedRow';
+import POEDetail from './POEDetail';
 
 interface CollegeTableProps {
   filtered: College[];
