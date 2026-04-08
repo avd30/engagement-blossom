@@ -73,11 +73,16 @@ export default function CollegeTable(props: CollegeTableProps) {
 
       {/* Desktop Table */}
       <div className="hidden sm:block overflow-x-auto">
-        <table className="w-full border-collapse">
+        <table className="w-full border-collapse" style={{ tableLayout: 'auto' }}>
           <colgroup>
-            <col className="w-9" /><col className="w-[180px]" /><col className="w-[100px]" />
-            <col className="w-[70px]" /><col className="w-[80px]" /><col className="w-[100px]" />
-            <col /><col className="w-[120px]" />
+            <col style={{ width: '36px' }} />
+            <col style={{ width: '15%' }} />
+            <col style={{ width: '10%' }} />
+            <col style={{ width: '7%' }} />
+            <col style={{ width: '9%' }} />
+            <col style={{ width: '10%' }} />
+            <col />
+            <col style={{ width: '110px' }} />
           </colgroup>
           <thead>
             <tr>
