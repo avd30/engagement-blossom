@@ -18,6 +18,11 @@ const Index = () => {
   const [collegeModal, setCollegeModal] = useState<{ open: boolean; college: College | null }>({ open: false, college: null });
   const [poeModal, setPoeModal] = useState<{ open: boolean; cid: string; poe: any }>({ open: false, cid: '', poe: null });
   const [importOpen, setImportOpen] = useState(false);
+  const [timelineOpenFor, setTimelineOpenFor] = useState<string | null>(null);
+
+  const toggleTimeline = useCallback((cid: string) => {
+    setTimelineOpenFor(prev => prev === cid ? null : cid);
+  }, []);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -108,6 +113,8 @@ const Index = () => {
           onAskDeletePOE={(cid, pid) => store.setPendingDeletePoe({ cid, pid })}
           onConfirmDeletePOE={store.deletePOE}
           onCancelDeletePOE={() => store.setPendingDeletePoe(null)}
+          timelineOpenFor={timelineOpenFor}
+          onToggleTimeline={toggleTimeline}
         />
       </div>
       <CollegeModal

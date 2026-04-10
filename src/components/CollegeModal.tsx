@@ -13,7 +13,7 @@ export default function CollegeModal({ open, onClose, onSave, college }: College
   const [stream, setStream] = useState('Engineering');
   const [tier, setTier] = useState('Premier');
   const [website, setWebsite] = useState('');
-  const [timeline, setTimeline] = useState('AY 2024-25');
+  
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
@@ -22,11 +22,11 @@ export default function CollegeModal({ open, onClose, onSave, college }: College
       setStream(college.stream);
       setTier(college.tier);
       setWebsite(college.website || '');
-      setTimeline(college.timeline || 'AY 2024-25');
+      
       setNotes(college.notes || '');
     } else {
       setName(''); setStream('Engineering'); setTier('Premier');
-      setWebsite(''); setTimeline('AY 2024-25'); setNotes('');
+      setWebsite(''); setNotes('');
     }
   }, [college, open]);
 
@@ -41,7 +41,7 @@ export default function CollegeModal({ open, onClose, onSave, college }: College
 
   const handleSave = () => {
     if (!name.trim()) { alert('College name is required.'); return; }
-    onSave({ name: name.trim(), stream, tier, website: website.trim(), timeline, notes: notes.trim() });
+    onSave({ name: name.trim(), stream, tier, website: website.trim(), timeline: '', notes: notes.trim() });
     onClose();
   };
 
@@ -67,11 +67,8 @@ export default function CollegeModal({ open, onClose, onSave, college }: College
             </div>
           </div>
           <div className="mb-3"><label className="text-[11px] font-semibold text-muted-foreground block mb-1">Official website</label><input value={website} onChange={e => setWebsite(e.target.value)} className="w-full py-[7px] px-[10px] border border-border rounded-sm text-xs bg-surface text-foreground outline-none focus:border-primary-mid" placeholder="https://placements.iitb.ac.in" /></div>
-          <div className="mb-3"><label className="text-[11px] font-semibold text-muted-foreground block mb-1">Timeline / Academic year</label>
-            <select value={timeline} onChange={e => setTimeline(e.target.value)} className="w-full py-[7px] px-[10px] border border-border rounded-sm text-xs bg-surface text-foreground outline-none focus:border-primary-mid cursor-pointer">
-              <option>AY 2024-25</option><option>AY 2025-26</option>
-            </select>
-          </div>
+
+
           <div className="mb-3"><label className="text-[11px] font-semibold text-muted-foreground block mb-1">Notes</label><textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} className="w-full py-[7px] px-[10px] border border-border rounded-sm text-xs bg-surface text-foreground outline-none focus:border-primary-mid resize-y" placeholder="Key contacts, strategy, engagement history..." /></div>
         </div>
         <div className="flex justify-end gap-2 px-[18px] py-3 border-t border-border">
