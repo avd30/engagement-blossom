@@ -164,7 +164,8 @@ export default function TimelineView({ poes, onSelectPOE, selectedPoeId }: Timel
                   top: `${connectorTop}px`,
                   height: `${Math.max(connectorHeight, 0)}px`,
                   width: '1px',
-                  background: 'hsl(var(--border))',
+                  background: t.tx,
+                  opacity: 0.4,
                   transform: 'translateX(50%)',
                 }}
               />
