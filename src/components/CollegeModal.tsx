@@ -26,7 +26,7 @@ export default function CollegeModal({ open, onClose, onSave, college }: College
       setNotes(college.notes || '');
     } else {
       setName(''); setStream('Engineering'); setTier('Premier');
-      setWebsite(''); setTimeline('AY 2024-25'); setNotes('');
+      setWebsite(''); setNotes('');
     }
   }, [college, open]);
 
