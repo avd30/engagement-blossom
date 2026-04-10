@@ -85,7 +85,38 @@ export default function TimelineView({ poes, onSelectPOE, selectedPoeId }: Timel
           })}
         </div>
 
-        {/* The colored bar - using primary palette */}
+        {/* Month division ticks */}
+        {AY_MONTH_ORDER.map((_, i) => {
+          const leftPct = (i * 100) / 12;
+          return (
+            <div
+              key={`tick-${i}`}
+              className="absolute"
+              style={{
+                left: `${leftPct}%`,
+                top: `${barY - 6}px`,
+                width: '1px',
+                height: '18px',
+                background: 'hsl(var(--primary-mid))',
+                opacity: 0.5,
+              }}
+            />
+          );
+        })}
+        {/* End tick */}
+        <div
+          className="absolute"
+          style={{
+            left: '100%',
+            top: `${barY - 6}px`,
+            width: '1px',
+            height: '18px',
+            background: 'hsl(var(--primary-mid))',
+            opacity: 0.5,
+          }}
+        />
+
+        {/* The colored bar */}
         <div className="absolute left-0 right-0 flex rounded-full overflow-hidden" style={{ top: `${barY}px`, height: '6px' }}>
           {AY_MONTH_ORDER.map((_, i) => (
             <div
