@@ -13,7 +13,7 @@ export default function CollegeModal({ open, onClose, onSave, college }: College
   const [stream, setStream] = useState('Engineering');
   const [tier, setTier] = useState('Premier');
   const [website, setWebsite] = useState('');
-  const [timeline, setTimeline] = useState('AY 2024-25');
+  
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function CollegeModal({ open, onClose, onSave, college }: College
       setStream(college.stream);
       setTier(college.tier);
       setWebsite(college.website || '');
-      setTimeline(college.timeline || 'AY 2024-25');
+      
       setNotes(college.notes || '');
     } else {
       setName(''); setStream('Engineering'); setTier('Premier');
@@ -41,7 +41,7 @@ export default function CollegeModal({ open, onClose, onSave, college }: College
 
   const handleSave = () => {
     if (!name.trim()) { alert('College name is required.'); return; }
-    onSave({ name: name.trim(), stream, tier, website: website.trim(), timeline, notes: notes.trim() });
+    onSave({ name: name.trim(), stream, tier, website: website.trim(), timeline: '', notes: notes.trim() });
     onClose();
   };
 
