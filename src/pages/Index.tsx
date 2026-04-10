@@ -113,6 +113,8 @@ const Index = () => {
           onAskDeletePOE={(cid, pid) => store.setPendingDeletePoe({ cid, pid })}
           onConfirmDeletePOE={store.deletePOE}
           onCancelDeletePOE={() => store.setPendingDeletePoe(null)}
+          timelineOpenFor={timelineOpenFor}
+          onToggleTimeline={toggleTimeline}
         />
       </div>
       <CollegeModal
