@@ -4,6 +4,7 @@ import TierBadge from './TierBadge';
 import POEBadge from './POEBadge';
 import ExpandedRow from './ExpandedRow';
 import POEDetail from './POEDetail';
+import TimelineView from './TimelineView';
 
 interface CollegeTableProps {
   filtered: College[];
@@ -36,11 +37,13 @@ interface CollegeTableProps {
 
 export default function CollegeTable(props: CollegeTableProps) {
   const { filtered, total, expandedRow, selectedPoe, pendingDeleteCollege, pendingDeletePoe,
+    timelineOpenFor,
     search, streamFilter, tierFilter,
     onSearchChange, onStreamChange, onTierChange,
     onToggleRow, onSelectPOE, onAddCollege, onEditCollege,
     onAskDeleteCollege, onConfirmDeleteCollege, onCancelDeleteCollege,
-    onAddPOE, onEditPOE, onAskDeletePOE, onConfirmDeletePOE, onCancelDeletePOE } = props;
+    onAddPOE, onEditPOE, onAskDeletePOE, onConfirmDeletePOE, onCancelDeletePOE,
+    onToggleTimeline } = props;
 
   return (
     <div className="bg-surface border border-border rounded-lg overflow-hidden">
@@ -78,14 +81,14 @@ export default function CollegeTable(props: CollegeTableProps) {
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              {['', 'College name', 'Stream', 'Tier', 'Timeline', 'Notes', 'Points of engagement', ''].map((h, i) => (
+              {['', 'College name', 'Stream', 'Tier', 'Notes', 'Points of engagement', ''].map((h, i) => (
                 <th key={i} className="text-left text-[11px] font-semibold text-muted-foreground py-2 px-3 border-b border-border bg-toolbar whitespace-nowrap tracking-wide">{h}</th>
               ))}
             </tr>
           </thead>
           {filtered.length === 0 ? (
             <tbody>
-              <tr><td colSpan={8}>
+              <tr><td colSpan={7}>
                 <div className="text-center py-12 text-muted-foreground">
                   <div className="text-[15px] font-medium mb-[6px] text-foreground">No colleges found</div>
                   <div className="text-xs mb-4">Try adjusting your search or filters</div>
@@ -96,6 +99,7 @@ export default function CollegeTable(props: CollegeTableProps) {
           ) : filtered.map(c => {
             const isExp = expandedRow === c.id;
             const isPendDel = pendingDeleteCollege === c.id;
+            const isTimelineOpen = timelineOpenFor === c.id;
             return (
               <tbody key={c.id}>
                 <tr className={isExp ? 'bg-toolbar' : 'hover:bg-toolbar'}>
@@ -108,10 +112,9 @@ export default function CollegeTable(props: CollegeTableProps) {
                   </td>
                   <td className="py-[10px] px-3 border-b border-border align-top"><StreamBadge stream={c.stream} /></td>
                   <td className="py-[10px] px-3 border-b border-border align-top"><TierBadge tier={c.tier} /></td>
-                  <td className="py-[10px] px-3 border-b border-border align-top text-[11px] text-muted-foreground whitespace-nowrap">{c.timeline || ''}</td>
                   <td className="py-[10px] px-3 border-b border-border align-top"><div className="text-[11px] text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]" title={c.notes || ''}>{c.notes || '—'}</div></td>
                   <td className="py-[10px] px-3 border-b border-border align-top">
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-1 items-center">
                       {c.poes.map(p => <POEBadge key={p.id} poe={p} onClick={() => onSelectPOE(c.id, p.id)} />)}
                       <button onClick={() => onAddPOE(c.id)} className="bg-background text-muted-foreground border border-dashed border-border rounded-[4px] text-[10px] px-[7px] py-[2px] cursor-pointer hover:border-primary-mid hover:text-primary">+ add</button>
                     </div>
@@ -127,14 +130,47 @@ export default function CollegeTable(props: CollegeTableProps) {
                       </div>
                     ) : (
                       <div className="flex gap-1">
+                        <button onClick={() => onToggleTimeline(c.id)} className="px-[9px] py-[3px] rounded-sm text-[11px] font-medium border border-primary bg-primary-light text-primary hover:bg-primary hover:text-primary-foreground transition-colors">Timeline</button>
                         <button onClick={() => onEditCollege(c.id)} className="px-[9px] py-[3px] rounded-sm text-[11px] font-medium border border-border bg-surface text-foreground hover:bg-background hover:border-primary-mid">Edit</button>
                         <button onClick={() => onAskDeleteCollege(c.id)} className="px-[9px] py-[3px] rounded-sm text-[11px] font-medium border border-[#F09595] bg-destructive-light text-destructive-dark hover:bg-[#F7C1C1]">Delete</button>
                       </div>
                     )}
                   </td>
                 </tr>
+                {isTimelineOpen && (
+                  <tr><td colSpan={7} className="p-0 bg-[#f8f7fd] border-b border-border">
+                    <div className="p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Engagement Timeline — {c.name}</div>
+                        <button onClick={() => onToggleTimeline(c.id)} className="text-[11px] text-muted-foreground hover:text-foreground cursor-pointer bg-transparent border-none">✕ Close</button>
+                      </div>
+                      <TimelineView
+                        poes={c.poes}
+                        selectedPoeId={selectedPoe?.cid === c.id ? selectedPoe.pid : null}
+                        onSelectPOE={(pid) => onSelectPOE(c.id, pid)}
+                      />
+                      {/* Show selected POE detail below timeline */}
+                      {selectedPoe?.cid === c.id && (() => {
+                        const p = c.poes.find(x => x.id === selectedPoe.pid);
+                        if (!p) return null;
+                        return (
+                          <div className="mt-3">
+                            <POEDetail
+                              poe={p}
+                              onEdit={() => onEditPOE(c.id, p.id)}
+                              onAskDelete={() => onAskDeletePOE(c.id, p.id)}
+                              onConfirmDelete={() => onConfirmDeletePOE(c.id, p.id)}
+                              onCancelDelete={onCancelDeletePOE}
+                              isPendingDelete={!!pendingDeletePoe && pendingDeletePoe.cid === c.id && pendingDeletePoe.pid === p.id}
+                            />
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </td></tr>
+                )}
                 {isExp && (
-                  <tr><td colSpan={8} className="p-0 bg-[#f2f0fa] border-b border-border">
+                  <tr><td colSpan={7} className="p-0 bg-[#f2f0fa] border-b border-border">
                     <ExpandedRow
                       college={c}
                       selectedPoe={selectedPoe}
@@ -165,6 +201,7 @@ export default function CollegeTable(props: CollegeTableProps) {
         ) : filtered.map(c => {
           const isExp = expandedRow === c.id;
           const isPendDel = pendingDeleteCollege === c.id;
+          const isTimelineOpen = timelineOpenFor === c.id;
           return (
             <div key={c.id} className="bg-surface border border-border rounded-lg mb-[10px] overflow-hidden">
               <div className="flex items-start justify-between p-[14px] cursor-pointer active:bg-toolbar" onClick={() => onToggleRow(c.id)}>
@@ -181,7 +218,8 @@ export default function CollegeTable(props: CollegeTableProps) {
               {c.notes && <div className="px-[14px] pb-3 text-xs text-muted-foreground border-b border-border">{c.notes}</div>}
               {isExp && (
                 <>
-                  <div className="flex gap-2 p-[10px_14px] border-b border-border">
+                  <div className="flex gap-2 p-[10px_14px] border-b border-border flex-wrap">
+                    <button onClick={(e) => { e.stopPropagation(); onToggleTimeline(c.id); }} className="px-[9px] py-[3px] rounded-sm text-[11px] font-medium border border-primary bg-primary-light text-primary hover:bg-primary hover:text-primary-foreground transition-colors">Timeline</button>
                     <button onClick={() => onEditCollege(c.id)} className="px-[9px] py-[3px] rounded-sm text-[11px] font-medium border border-border bg-surface text-foreground">Edit college</button>
                     {isPendDel ? (
                       <div className="flex flex-col items-start gap-[5px] bg-destructive-light border border-[#F09595] rounded-sm px-2 py-[6px]">
@@ -195,6 +233,35 @@ export default function CollegeTable(props: CollegeTableProps) {
                       <button onClick={() => onAskDeleteCollege(c.id)} className="px-[9px] py-[3px] rounded-sm text-[11px] font-medium border border-[#F09595] bg-destructive-light text-destructive-dark">Delete</button>
                     )}
                   </div>
+                  {isTimelineOpen && (
+                    <div className="p-3 bg-[#f8f7fd] border-b border-border">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Engagement Timeline</div>
+                        <button onClick={() => onToggleTimeline(c.id)} className="text-[11px] text-muted-foreground hover:text-foreground cursor-pointer bg-transparent border-none">✕ Close</button>
+                      </div>
+                      <TimelineView
+                        poes={c.poes}
+                        selectedPoeId={selectedPoe?.cid === c.id ? selectedPoe.pid : null}
+                        onSelectPOE={(pid) => onSelectPOE(c.id, pid)}
+                      />
+                      {selectedPoe?.cid === c.id && (() => {
+                        const p = c.poes.find(x => x.id === selectedPoe.pid);
+                        if (!p) return null;
+                        return (
+                          <div className="mt-3">
+                            <POEDetail
+                              poe={p}
+                              onEdit={() => onEditPOE(c.id, p.id)}
+                              onAskDelete={() => onAskDeletePOE(c.id, p.id)}
+                              onConfirmDelete={() => onConfirmDeletePOE(c.id, p.id)}
+                              onCancelDelete={onCancelDeletePOE}
+                              isPendingDelete={!!pendingDeletePoe && pendingDeletePoe.cid === c.id && pendingDeletePoe.pid === p.id}
+                            />
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
                   <div className="p-3 bg-background">
                     <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Points of engagement</div>
                     {c.poes.length === 0 ? (
@@ -204,7 +271,7 @@ export default function CollegeTable(props: CollegeTableProps) {
                         <div className="flex flex-wrap gap-[5px] mb-2">
                           {c.poes.map(p => <POEBadge key={p.id} poe={p} onClick={() => onSelectPOE(c.id, p.id)} selected={selectedPoe?.cid === c.id && selectedPoe?.pid === p.id} />)}
                         </div>
-                        {selectedPoe?.cid === c.id && (() => {
+                        {selectedPoe?.cid === c.id && !isTimelineOpen && (() => {
                           const p = c.poes.find(x => x.id === selectedPoe.pid);
                           if (!p) return null;
                           return (
@@ -231,4 +298,3 @@ export default function CollegeTable(props: CollegeTableProps) {
     </div>
   );
 }
-
