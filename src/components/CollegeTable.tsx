@@ -12,6 +12,7 @@ interface CollegeTableProps {
   selectedPoe: { cid: string; pid: string } | null;
   pendingDeleteCollege: string | null;
   pendingDeletePoe: { cid: string; pid: string } | null;
+  timelineOpenFor: string | null;
   search: string;
   streamFilter: string;
   tierFilter: string;
@@ -30,6 +31,7 @@ interface CollegeTableProps {
   onAskDeletePOE: (cid: string, pid: string) => void;
   onConfirmDeletePOE: (cid: string, pid: string) => void;
   onCancelDeletePOE: () => void;
+  onToggleTimeline: (cid: string) => void;
 }
 
 export default function CollegeTable(props: CollegeTableProps) {
