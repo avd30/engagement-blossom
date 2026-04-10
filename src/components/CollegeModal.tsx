@@ -67,11 +67,8 @@ export default function CollegeModal({ open, onClose, onSave, college }: College
             </div>
           </div>
           <div className="mb-3"><label className="text-[11px] font-semibold text-muted-foreground block mb-1">Official website</label><input value={website} onChange={e => setWebsite(e.target.value)} className="w-full py-[7px] px-[10px] border border-border rounded-sm text-xs bg-surface text-foreground outline-none focus:border-primary-mid" placeholder="https://placements.iitb.ac.in" /></div>
-          <div className="mb-3"><label className="text-[11px] font-semibold text-muted-foreground block mb-1">Timeline / Academic year</label>
-            <select value={timeline} onChange={e => setTimeline(e.target.value)} className="w-full py-[7px] px-[10px] border border-border rounded-sm text-xs bg-surface text-foreground outline-none focus:border-primary-mid cursor-pointer">
-              <option>AY 2024-25</option><option>AY 2025-26</option>
-            </select>
-          </div>
+
+
           <div className="mb-3"><label className="text-[11px] font-semibold text-muted-foreground block mb-1">Notes</label><textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} className="w-full py-[7px] px-[10px] border border-border rounded-sm text-xs bg-surface text-foreground outline-none focus:border-primary-mid resize-y" placeholder="Key contacts, strategy, engagement history..." /></div>
         </div>
         <div className="flex justify-end gap-2 px-[18px] py-3 border-t border-border">
