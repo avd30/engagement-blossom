@@ -116,10 +116,7 @@ const Index = () => {
           <div className="flex-1 min-w-0">
             <EngagementCalendar
               colleges={store.db}
-              onSelectCollege={(cid, pid) => {
-                store.toggleRow(cid);
-                store.selectPOE(cid, pid);
-              }}
+              onSelectCollege={handleCalendarSelect}
             />
           </div>
         </div>
