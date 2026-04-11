@@ -132,6 +132,7 @@ const Index = () => {
           </div>
         </div>
 
+        <div ref={tableRef}>
         <CollegeTable
           filtered={filtered}
           total={store.db.length}
