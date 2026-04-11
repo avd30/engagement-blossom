@@ -130,10 +130,7 @@ const Index = () => {
           <div className="mt-3">
             <EngagementCalendar
               colleges={store.db}
-              onSelectCollege={(cid, pid) => {
-                store.toggleRow(cid);
-                store.selectPOE(cid, pid);
-              }}
+              onSelectCollege={handleCalendarSelect}
             />
           </div>
         </div>
