@@ -238,7 +238,7 @@ export default function CollegeTable(props: CollegeTableProps) {
                         <div className="flex flex-wrap gap-[5px] mb-2">
                           {c.poes.map(p => <POEBadge key={p.id} poe={p} onClick={() => onSelectPOE(c.id, p.id)} selected={selectedPoe?.cid === c.id && selectedPoe?.pid === p.id} />)}
                         </div>
-                        {selectedPoe?.cid === c.id && !isTimelineOpen && (() => {
+                        {selectedPoe?.cid === c.id && (() => {
                           const p = c.poes.find(x => x.id === selectedPoe.pid);
                           if (!p) return null;
                           return (
