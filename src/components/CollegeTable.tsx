@@ -33,6 +33,7 @@ interface CollegeTableProps {
   onConfirmDeletePOE: (cid: string, pid: string) => void;
   onCancelDeletePOE: () => void;
   onToggleTimeline: (cid: string) => void;
+  onCloseTimeline: (cid: string) => void;
 }
 
 export default function CollegeTable(props: CollegeTableProps) {
@@ -43,7 +44,7 @@ export default function CollegeTable(props: CollegeTableProps) {
     onToggleRow, onSelectPOE, onAddCollege, onEditCollege,
     onAskDeleteCollege, onConfirmDeleteCollege, onCancelDeleteCollege,
     onAddPOE, onEditPOE, onAskDeletePOE, onConfirmDeletePOE, onCancelDeletePOE,
-    onToggleTimeline } = props;
+    onToggleTimeline, onCloseTimeline } = props;
 
   return (
     <div className="bg-surface border border-border rounded-lg overflow-hidden">
@@ -142,7 +143,7 @@ export default function CollegeTable(props: CollegeTableProps) {
                     <div className="p-3">
                       <div className="flex items-center justify-between mb-2">
                         <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Engagement Timeline — {c.name}</div>
-                        <button onClick={() => onToggleTimeline(c.id)} className="text-[11px] text-muted-foreground hover:text-foreground cursor-pointer bg-transparent border-none">✕ Close</button>
+                        <button onClick={() => onCloseTimeline(c.id)} className="text-[14px] text-destructive hover:text-destructive-dark cursor-pointer bg-transparent border-none font-bold leading-none">✕</button>
                       </div>
                       <TimelineView
                         poes={c.poes}
@@ -220,7 +221,7 @@ export default function CollegeTable(props: CollegeTableProps) {
                     <div className="p-3 bg-[#f8f7fd] border-b border-border">
                       <div className="flex items-center justify-between mb-2">
                         <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Engagement Timeline</div>
-                        <button onClick={() => onToggleTimeline(c.id)} className="text-[11px] text-muted-foreground hover:text-foreground cursor-pointer bg-transparent border-none">✕ Close</button>
+                        <button onClick={() => onCloseTimeline(c.id)} className="text-[14px] text-destructive hover:text-destructive-dark cursor-pointer bg-transparent border-none font-bold leading-none">✕</button>
                       </div>
                       <TimelineView
                         poes={c.poes}

@@ -4,6 +4,7 @@ import { College, getPOEType } from '@/types/campus';
 import { useCollegeStore } from '@/store/useCollegeStore';
 import TopBar from '@/components/TopBar';
 import StatsBar from '@/components/StatsBar';
+import EngagementCalendar from '@/components/EngagementCalendar';
 import CollegeTable from '@/components/CollegeTable';
 import CollegeModal from '@/components/CollegeModal';
 import POEModal from '@/components/POEModal';
@@ -88,7 +89,37 @@ const Index = () => {
           </div>
           <button onClick={() => setCollegeModal({ open: true, college: null })} className="px-[14px] py-[7px] rounded-sm text-xs font-medium bg-primary text-primary-foreground border border-primary hover:bg-primary-dark">+ Add college</button>
         </div>
-        <StatsBar db={store.db} />
+
+        {/* Desktop: 2x2 stats + calendar side by side */}
+        <div className="hidden sm:flex gap-4 mb-5">
+          <div className="grid grid-cols-2 gap-[10px] flex-shrink-0 w-[340px]">
+            <StatsBar db={store.db} variant="compact" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <EngagementCalendar
+              colleges={store.db}
+              onSelectCollege={(cid, pid) => {
+                store.toggleRow(cid);
+                store.selectPOE(cid, pid);
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Mobile: stats then calendar stacked */}
+        <div className="sm:hidden mb-5">
+          <StatsBar db={store.db} />
+          <div className="mt-3">
+            <EngagementCalendar
+              colleges={store.db}
+              onSelectCollege={(cid, pid) => {
+                store.toggleRow(cid);
+                store.selectPOE(cid, pid);
+              }}
+            />
+          </div>
+        </div>
+
         <CollegeTable
           filtered={filtered}
           total={store.db.length}
@@ -116,6 +147,10 @@ const Index = () => {
           onCancelDeletePOE={() => store.setPendingDeletePoe(null)}
           timelineOpenFor={timelineOpenFor}
           onToggleTimeline={toggleTimeline}
+          onCloseTimeline={(cid: string) => {
+            setTimelineOpenFor(prev => prev === cid ? null : prev);
+            if (store.expandedRow === cid) store.toggleRow(cid);
+          }}
         />
       </div>
       <CollegeModal
