@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import { College, getPOEType } from '@/types/campus';
 import { useCollegeStore } from '@/store/useCollegeStore';
