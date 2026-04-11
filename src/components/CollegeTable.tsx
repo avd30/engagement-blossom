@@ -149,23 +149,6 @@ export default function CollegeTable(props: CollegeTableProps) {
                         selectedPoeId={selectedPoe?.cid === c.id ? selectedPoe.pid : null}
                         onSelectPOE={(pid) => onSelectPOE(c.id, pid)}
                       />
-                      {/* Show selected POE detail below timeline */}
-                      {selectedPoe?.cid === c.id && (() => {
-                        const p = c.poes.find(x => x.id === selectedPoe.pid);
-                        if (!p) return null;
-                        return (
-                          <div className="mt-3">
-                            <POEDetail
-                              poe={p}
-                              onEdit={() => onEditPOE(c.id, p.id)}
-                              onAskDelete={() => onAskDeletePOE(c.id, p.id)}
-                              onConfirmDelete={() => onConfirmDeletePOE(c.id, p.id)}
-                              onCancelDelete={onCancelDeletePOE}
-                              isPendingDelete={!!pendingDeletePoe && pendingDeletePoe.cid === c.id && pendingDeletePoe.pid === p.id}
-                            />
-                          </div>
-                        );
-                      })()}
                     </div>
                   </td></tr>
                 )}
@@ -244,22 +227,6 @@ export default function CollegeTable(props: CollegeTableProps) {
                         selectedPoeId={selectedPoe?.cid === c.id ? selectedPoe.pid : null}
                         onSelectPOE={(pid) => onSelectPOE(c.id, pid)}
                       />
-                      {selectedPoe?.cid === c.id && (() => {
-                        const p = c.poes.find(x => x.id === selectedPoe.pid);
-                        if (!p) return null;
-                        return (
-                          <div className="mt-3">
-                            <POEDetail
-                              poe={p}
-                              onEdit={() => onEditPOE(c.id, p.id)}
-                              onAskDelete={() => onAskDeletePOE(c.id, p.id)}
-                              onConfirmDelete={() => onConfirmDeletePOE(c.id, p.id)}
-                              onCancelDelete={onCancelDeletePOE}
-                              isPendingDelete={!!pendingDeletePoe && pendingDeletePoe.cid === c.id && pendingDeletePoe.pid === p.id}
-                            />
-                          </div>
-                        );
-                      })()}
                     </div>
                   )}
                   <div className="p-3 bg-background">
@@ -271,7 +238,7 @@ export default function CollegeTable(props: CollegeTableProps) {
                         <div className="flex flex-wrap gap-[5px] mb-2">
                           {c.poes.map(p => <POEBadge key={p.id} poe={p} onClick={() => onSelectPOE(c.id, p.id)} selected={selectedPoe?.cid === c.id && selectedPoe?.pid === p.id} />)}
                         </div>
-                        {selectedPoe?.cid === c.id && !isTimelineOpen && (() => {
+                        {selectedPoe?.cid === c.id && (() => {
                           const p = c.poes.find(x => x.id === selectedPoe.pid);
                           if (!p) return null;
                           return (

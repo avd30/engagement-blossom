@@ -35,7 +35,8 @@ const Index = () => {
   }, [store.db, search, streamFilter, tierFilter]);
 
   const exportJSON = useCallback(() => {
-    const data = JSON.stringify({ version: 1, exported: new Date().toISOString(), colleges: store.db }, null, 2);
+    const cleaned = store.db.map(({ timeline, ...rest }) => rest);
+    const data = JSON.stringify({ version: 1, exported: new Date().toISOString(), colleges: cleaned }, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -47,21 +48,21 @@ const Index = () => {
   }, [store]);
 
   const exportCSV = useCallback(() => {
-    const headers = ['College', 'Stream', 'Tier', 'Website', 'Timeline', 'Notes', 'POE Type', 'Custom Type', 'Event Detail', 'Date', 'Event Link', 'POC Name', 'POC Email', 'POC Phone', 'POE Notes'];
+    const headers = ['College', 'Stream', 'Tier', 'Website', 'Notes', 'POE Type', 'Custom Type', 'Event Detail', 'Date', 'Event Link', 'POC Name', 'POC Email', 'POC Phone', 'POE Notes'];
     const rows: string[][] = [];
     store.db.forEach(c => {
       if (c.poes.length === 0) {
-        rows.push([c.name, c.stream, c.tier, c.website || '', c.timeline || '', c.notes || '', '', '', '', '', '', '', '', '', '']);
+        rows.push([c.name, c.stream, c.tier, c.website || '', c.notes || '', '', '', '', '', '', '', '', '', '']);
       } else {
         c.poes.forEach(p => {
           const t = getPOEType(p);
-          rows.push([c.name, c.stream, c.tier, c.website || '', c.timeline || '', c.notes || '', t.label, p.customType || '', p.eventDetail || '', p.date || '', p.link || '', p.pocName || '', p.pocEmail || '', p.pocPhone || '', p.notes || '']);
+          rows.push([c.name, c.stream, c.tier, c.website || '', c.notes || '', t.label, p.customType || '', p.eventDetail || '', p.date || '', p.link || '', p.pocName || '', p.pocEmail || '', p.pocPhone || '', p.notes || '']);
         });
       }
     });
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-    ws['!cols'] = [22, 14, 10, 30, 12, 30, 20, 16, 24, 12, 30, 18, 24, 14, 30].map(w => ({ wch: w }));
+    ws['!cols'] = [22, 14, 10, 30, 30, 20, 16, 24, 12, 30, 18, 24, 14, 30].map(w => ({ wch: w }));
     // Style header row with bold font
     for (let c = 0; c < headers.length; c++) {
       const cellRef = XLSX.utils.encode_cell({ r: 0, c });
