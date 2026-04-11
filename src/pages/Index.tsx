@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import { College, getPOEType } from '@/types/campus';
 import { useCollegeStore } from '@/store/useCollegeStore';
@@ -20,6 +20,8 @@ const Index = () => {
   const [poeModal, setPoeModal] = useState<{ open: boolean; cid: string; poe: any }>({ open: false, cid: '', poe: null });
   const [importOpen, setImportOpen] = useState(false);
   const [timelineOpenFor, setTimelineOpenFor] = useState<string | null>(null);
+  const [prioritizedCollegeId, setPrioritizedCollegeId] = useState<string | null>(null);
+  const tableRef = useRef<HTMLDivElement>(null);
 
   const toggleTimeline = useCallback((cid: string) => {
     setTimelineOpenFor(prev => prev === cid ? null : cid);
@@ -27,13 +29,29 @@ const Index = () => {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return store.db.filter(c => {
+    const list = store.db.filter(c => {
       if (q && !c.name.toLowerCase().includes(q) && !(c.notes || '').toLowerCase().includes(q)) return false;
       if (streamFilter && c.stream !== streamFilter) return false;
       if (tierFilter && c.tier !== tierFilter) return false;
       return true;
     });
-  }, [store.db, search, streamFilter, tierFilter]);
+    if (prioritizedCollegeId) {
+      const idx = list.findIndex(c => c.id === prioritizedCollegeId);
+      if (idx > 0) {
+        const [item] = list.splice(idx, 1);
+        list.unshift(item);
+      }
+    }
+    return list;
+  }, [store.db, search, streamFilter, tierFilter, prioritizedCollegeId]);
+
+  const handleCalendarSelect = useCallback((cid: string, pid: string) => {
+    setPrioritizedCollegeId(cid);
+    store.selectPOE(cid, pid);
+    setTimeout(() => {
+      tableRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }, [store]);
 
   const exportJSON = useCallback(() => {
     const cleaned = store.db.map(({ timeline, ...rest }) => rest);
@@ -98,10 +116,7 @@ const Index = () => {
           <div className="flex-1 min-w-0">
             <EngagementCalendar
               colleges={store.db}
-              onSelectCollege={(cid, pid) => {
-                store.toggleRow(cid);
-                store.selectPOE(cid, pid);
-              }}
+              onSelectCollege={handleCalendarSelect}
             />
           </div>
         </div>
@@ -112,14 +127,12 @@ const Index = () => {
           <div className="mt-3">
             <EngagementCalendar
               colleges={store.db}
-              onSelectCollege={(cid, pid) => {
-                store.toggleRow(cid);
-                store.selectPOE(cid, pid);
-              }}
+              onSelectCollege={handleCalendarSelect}
             />
           </div>
         </div>
 
+        <div ref={tableRef}>
         <CollegeTable
           filtered={filtered}
           total={store.db.length}
@@ -152,6 +165,7 @@ const Index = () => {
             if (store.expandedRow === cid) store.toggleRow(cid);
           }}
         />
+        </div>
       </div>
       <CollegeModal
         open={collegeModal.open}
