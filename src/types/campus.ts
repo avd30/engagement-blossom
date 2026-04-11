@@ -17,7 +17,7 @@ export interface College {
   stream: string;
   tier: string;
   website: string;
-  timeline: string;
+  timeline?: string;
   nirf: number | null;
   notes: string;
   poes: POE[];

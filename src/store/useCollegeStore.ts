@@ -10,7 +10,7 @@ const INITIAL_DATA: College[] = [
     stream: "Engineering",
     tier: "Premier",
     website: "https://www.iith.ac.in",
-    timeline: "AY 2024-25",
+    timeline: "",
     nirf: null,
     notes: "",
     poes: [
@@ -25,7 +25,7 @@ const INITIAL_DATA: College[] = [
     stream: "Engineering",
     tier: "Tier 1",
     website: "https://www.iitm.ac.in/",
-    timeline: "AY 2024-25",
+    timeline: "",
     nirf: null,
     notes: "",
     poes: []
