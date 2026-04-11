@@ -147,6 +147,10 @@ const Index = () => {
           onCancelDeletePOE={() => store.setPendingDeletePoe(null)}
           timelineOpenFor={timelineOpenFor}
           onToggleTimeline={toggleTimeline}
+          onCloseTimeline={(cid: string) => {
+            setTimelineOpenFor(prev => prev === cid ? null : prev);
+            if (store.expandedRow === cid) store.toggleRow(cid);
+          }}
         />
       </div>
       <CollegeModal
