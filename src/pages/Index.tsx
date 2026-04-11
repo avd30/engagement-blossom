@@ -165,6 +165,7 @@ const Index = () => {
             if (store.expandedRow === cid) store.toggleRow(cid);
           }}
         />
+        </div>
       </div>
       <CollegeModal
         open={collegeModal.open}
