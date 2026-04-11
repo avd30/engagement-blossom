@@ -33,6 +33,7 @@ interface CollegeTableProps {
   onConfirmDeletePOE: (cid: string, pid: string) => void;
   onCancelDeletePOE: () => void;
   onToggleTimeline: (cid: string) => void;
+  onCloseTimeline: (cid: string) => void;
 }
 
 export default function CollegeTable(props: CollegeTableProps) {
