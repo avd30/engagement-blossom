@@ -1,4 +1,4 @@
-import { College, STATUS_COLORS } from '@/types/campus';
+import { College } from '@/types/campus';
 import StreamBadge from './StreamBadge';
 import TierBadge from './TierBadge';
 import POEBadge from './POEBadge';
