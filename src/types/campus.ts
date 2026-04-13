@@ -1,14 +1,36 @@
+export interface POEReport {
+  actualTime?: string;
+  leadersInvolved?: string;
+  candidateCount?: number;
+  reach?: string;
+  driveLink?: string;
+  summary?: string;
+}
+
+export type EngagementStatus = 'planned' | 'done' | 'not_done' | 'rescheduled';
+
 export interface POE {
   id: string;
   type: string;
   customType?: string;
   eventDetail: string;
-  date: string;
+  date: string; // startDate (kept as 'date' for backward compat)
+  endDate?: string;
   link: string;
   pocName: string;
   pocEmail: string;
   pocPhone: string;
   notes: string;
+  status: EngagementStatus;
+  assignedTo?: string;
+  reminderEnabled: boolean;
+  reminderDate?: string;
+  reminderLeadDays?: number;
+  report?: POEReport;
+  notDoneReason?: string;
+  notDoneNextAction?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface College {
@@ -87,3 +109,32 @@ export const STREAM_TIERS: Record<string, string[]> = {
   Engineering: ['Premier', 'Tier 1'],
   Management: ['IIM', 'Others'],
 };
+
+export const STATUS_COLORS: Record<EngagementStatus, { bg: string; tx: string; label: string }> = {
+  planned: { bg: 'hsl(217 91% 60%)', tx: '#fff', label: 'Planned' },
+  done: { bg: 'hsl(142 71% 45%)', tx: '#fff', label: 'Done' },
+  not_done: { bg: 'hsl(0 84% 60%)', tx: '#fff', label: 'Not Done' },
+  rescheduled: { bg: 'hsl(45 93% 47%)', tx: '#000', label: 'Rescheduled' },
+};
+
+export function computeReminderDate(startDate: string, leadDays: number = 60): string {
+  if (!startDate) return '';
+  const d = new Date(startDate + 'T00:00:00');
+  d.setDate(d.getDate() - leadDays);
+  return d.toISOString().slice(0, 10);
+}
+
+export function migratePOE(p: any): POE {
+  return {
+    ...p,
+    status: p.status || 'planned',
+    reminderEnabled: p.reminderEnabled ?? true,
+    reminderDate: p.reminderDate || (p.date ? computeReminderDate(p.date, p.reminderLeadDays || 60) : ''),
+    reminderLeadDays: p.reminderLeadDays || 60,
+    endDate: p.endDate || '',
+    assignedTo: p.assignedTo || '',
+    report: p.report || undefined,
+    createdAt: p.createdAt || new Date().toISOString(),
+    updatedAt: p.updatedAt || new Date().toISOString(),
+  };
+}
