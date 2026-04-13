@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { College, POE, uid } from '@/types/campus';
+import { College, POE, uid, migratePOE } from '@/types/campus';
 
 const STORAGE_KEY = 'campusconnect_v1';
 
@@ -14,9 +14,9 @@ const INITIAL_DATA: College[] = [
     nirf: null,
     notes: "",
     poes: [
-      { id: "xf0k7cbomnpo9ct3", type: "annual_fest", customType: "", eventDetail: "Elan & Vision- Tech+Cultural Fest", date: "2026-01-01", link: "https://elan.org.in/", pocName: "Sponsorship Head", pocEmail: "ELAN.NVISION.SPONSORSHIP@SA.IITH.AC.IN", pocPhone: "+91 88320 28101", notes: "Have send the brochure. 25000+ attendees, largest fest in Telangana and Andhra Pradesh.\nIncludes a Hackathon sponsorship depending upon the sponsorship package.\nCurrent Sponsors- Greenko, Deutsche Börse Group" },
-      { id: "xlk5qwormnpoyei3", type: "others", customType: "E-Summit", eventDetail: "E-Summit", date: "2026-02-01", link: "https://ecell.iith.ac.in/esummit", pocName: "E Cell Office", pocEmail: "ecell@campus.iith.ac.in", pocPhone: "+91 62030 42129", notes: "Scale is not that large, current sponsors- Draker Startup House, Innomet" },
-      { id: "xbnmum3mmnppfrg6", type: "others", customType: "ACM - ARCS", eventDetail: "ACM - ARCS", date: "2026-02-01", link: "https://event.india.acm.org/annualevent/", pocName: "ACM- India Council", pocEmail: "operations@india.acm.org", pocPhone: "", notes: "Not Fixed to particular college. \nCurrent Sponsors - Persistent, TCS Research, Google" },
+      { id: "xf0k7cbomnpo9ct3", type: "annual_fest", customType: "", eventDetail: "Elan & Vision- Tech+Cultural Fest", date: "2026-01-01", endDate: "2026-01-03", link: "https://elan.org.in/", pocName: "Sponsorship Head", pocEmail: "ELAN.NVISION.SPONSORSHIP@SA.IITH.AC.IN", pocPhone: "+91 88320 28101", notes: "Have send the brochure. 25000+ attendees, largest fest in Telangana and Andhra Pradesh.", status: "planned", reminderEnabled: true, reminderDate: "2025-11-02", reminderLeadDays: 60, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: "xlk5qwormnpoyei3", type: "others", customType: "E-Summit", eventDetail: "E-Summit", date: "2026-02-01", endDate: "", link: "https://ecell.iith.ac.in/esummit", pocName: "E Cell Office", pocEmail: "ecell@campus.iith.ac.in", pocPhone: "+91 62030 42129", notes: "Scale is not that large", status: "planned", reminderEnabled: true, reminderDate: "2025-12-03", reminderLeadDays: 60, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: "xbnmum3mmnppfrg6", type: "others", customType: "ACM - ARCS", eventDetail: "ACM - ARCS", date: "2026-02-01", endDate: "2026-02-03", link: "https://event.india.acm.org/annualevent/", pocName: "ACM- India Council", pocEmail: "operations@india.acm.org", pocPhone: "", notes: "Not Fixed to particular college.", status: "planned", reminderEnabled: true, reminderDate: "2025-12-03", reminderLeadDays: 60, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
     ]
   },
   {
@@ -32,11 +32,17 @@ const INITIAL_DATA: College[] = [
   }
 ];
 
+function migrateData(colleges: College[]): College[] {
+  return colleges.map(c => ({
+    ...c,
+    poes: c.poes.map(migratePOE),
+  }));
+}
+
 function loadFromStorage(): College[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-    // Save initial data
+    if (raw) return migrateData(JSON.parse(raw));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_DATA));
     return JSON.parse(JSON.stringify(INITIAL_DATA));
   } catch {
@@ -111,7 +117,7 @@ export function useCollegeStore() {
   }, [db, persist, toast]);
 
   const updatePOE = useCallback((cid: string, pid: string, data: Partial<POE>) => {
-    const newDb = db.map(c => c.id === cid ? { ...c, poes: c.poes.map(p => p.id === pid ? { ...p, ...data } : p) } : c);
+    const newDb = db.map(c => c.id === cid ? { ...c, poes: c.poes.map(p => p.id === pid ? { ...p, ...data, updatedAt: new Date().toISOString() } : p) } : c);
     persist(newDb);
     toast('Engagement updated');
   }, [db, persist, toast]);
@@ -125,7 +131,7 @@ export function useCollegeStore() {
   }, [db, selectedPoe, persist, toast]);
 
   const importData = useCallback((colleges: College[]) => {
-    persist(colleges);
+    persist(migrateData(colleges));
     setExpandedRow(null);
     setSelectedPoe(null);
     toast(`Imported ${colleges.length} colleges successfully`);
