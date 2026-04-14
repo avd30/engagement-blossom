@@ -91,11 +91,23 @@ export default function POEModal({ open, onClose, onSave, poe }: POEModalProps) 
           <div className="mb-3 grid grid-cols-1 sm:grid-cols-2 gap-[10px]">
             <div>
               <label className="text-[11px] font-semibold text-muted-foreground block mb-1">Start date *</label>
-              <input type="date" value={date} onChange={e => setDate(e.target.value)} className={inputCls} />
+              <input type="date" value={date} onChange={e => { const v = e.target.value; setDate(v); if (endDate === date) setEndDate(v); }} className={inputCls} />
             </div>
             <div>
               <label className="text-[11px] font-semibold text-muted-foreground block mb-1">End date <span className="font-normal text-text-hint">(optional)</span></label>
-              <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className={inputCls} min={date} />
+              <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className={inputCls} min={date} disabled={endDate === date && date !== ''} />
+              <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer text-[11px] text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={!!(date && endDate === date)}
+                  onChange={e => {
+                    if (e.target.checked && date) setEndDate(date);
+                    else setEndDate('');
+                  }}
+                  className="accent-primary"
+                />
+                Same as start date (1-day event)
+              </label>
             </div>
           </div>
 

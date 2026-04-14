@@ -78,10 +78,8 @@ export default function CollegeTable(props: CollegeTableProps) {
           </select>
           <select value={tierFilter} onChange={e => onTierChange(e.target.value)} className="flex-1 sm:flex-none py-[6px] px-2.5 border border-border rounded-xl text-xs bg-surface text-foreground outline-none cursor-pointer focus:border-primary-mid">
             <option value="">All tiers</option>
-            <option>Premier</option>
-            <option>Tier 1</option>
-            <option>IIM</option>
-            <option>Others</option>
+            <option value="premier_iim">Premier / IIM</option>
+            <option value="tier1_others">Tier 1 / Others</option>
           </select>
         </div>
         <div className="flex gap-1 flex-wrap">
