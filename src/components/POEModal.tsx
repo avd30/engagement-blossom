@@ -91,7 +91,7 @@ export default function POEModal({ open, onClose, onSave, poe }: POEModalProps) 
           <div className="mb-3 grid grid-cols-1 sm:grid-cols-2 gap-[10px]">
             <div>
               <label className="text-[11px] font-semibold text-muted-foreground block mb-1">Start date *</label>
-              <input type="date" value={date} onChange={e => setDate(e.target.value)} className={inputCls} />
+              <input type="date" value={date} onChange={e => { const v = e.target.value; setDate(v); if (endDate === date) setEndDate(v); }} className={inputCls} />
             </div>
             <div>
               <label className="text-[11px] font-semibold text-muted-foreground block mb-1">End date <span className="font-normal text-text-hint">(optional)</span></label>
