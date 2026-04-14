@@ -75,14 +75,24 @@ export function useCollegeStore() {
   // triggers this callback and updates local state immediately.
 
   useEffect(() => {
+    if (!rtdb) {
+      // No Firebase — use localStorage fallback
+      const saved = localStorage.getItem('campusconnect-db');
+      if (saved) {
+        try { setDb(JSON.parse(saved)); } catch { setDb(INITIAL_DATA); }
+      } else {
+        setDb(INITIAL_DATA);
+      }
+      setIsLoading(false);
+      return;
+    }
+
     const collegesRef = ref(rtdb, 'colleges');
 
     const unsubscribe = onValue(collegesRef, (snapshot) => {
       const data = snapshot.val();
 
       if (data === null) {
-        // Database is empty — this is a first-time setup.
-        // Seed Firebase with INITIAL_DATA so the app is not blank.
         set(collegesRef, INITIAL_DATA);
         setDb(JSON.parse(JSON.stringify(INITIAL_DATA)));
       } else {
@@ -92,7 +102,6 @@ export function useCollegeStore() {
       setIsLoading(false);
     });
 
-    // Cleanup: unsubscribe from Firebase when component unmounts.
     return () => unsubscribe();
   }, []);
 
