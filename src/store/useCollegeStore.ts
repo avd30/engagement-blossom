@@ -1,7 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { College, POE, uid, migratePOE } from '@/types/campus';
+import { rtdb } from '@/lib/firebase';
+import { ref, onValue, set } from 'firebase/database';
 
-const STORAGE_KEY = 'campusconnect_v1';
+// ── INITIAL SEED DATA ────────────────────────────────────────────────────────
+// Used only when the Firebase database is completely empty (first-time setup).
+// After the first write, Firebase is the source of truth and this is ignored.
 
 const INITIAL_DATA: College[] = [
   {
@@ -32,6 +36,9 @@ const INITIAL_DATA: College[] = [
   }
 ];
 
+// ── MIGRATION ────────────────────────────────────────────────────────────────
+// Runs on every data load to ensure old records are upgraded to current schema.
+
 function migrateData(colleges: College[]): College[] {
   return colleges.map(c => ({
     ...c,
@@ -39,38 +46,75 @@ function migrateData(colleges: College[]): College[] {
   }));
 }
 
-function loadFromStorage(): College[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return migrateData(JSON.parse(raw));
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_DATA));
-    return JSON.parse(JSON.stringify(INITIAL_DATA));
-  } catch {
-    return JSON.parse(JSON.stringify(INITIAL_DATA));
-  }
+// ── FIREBASE HELPERS ─────────────────────────────────────────────────────────
+// Firebase stores arrays safely as objects when written via set().
+// onValue() may return them as plain objects with numeric/string keys,
+// so we normalise back to a plain array on every read.
+
+function normaliseSnapshot(data: unknown): College[] {
+  if (!data) return [];
+  const raw = typeof data === 'object' ? Object.values(data as object) : [];
+  return migrateData(raw as College[]);
 }
 
-function saveToStorage(db: College[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
-}
+// ── STORE ────────────────────────────────────────────────────────────────────
 
 export function useCollegeStore() {
-  const [db, setDb] = useState<College[]>(loadFromStorage);
+  // db = the colleges array. Starts empty; Firebase populates it via useEffect.
+  const [db, setDb] = useState<College[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const [selectedPoe, setSelectedPoe] = useState<{ cid: string; pid: string } | null>(null);
   const [pendingDeleteCollege, setPendingDeleteCollege] = useState<string | null>(null);
   const [pendingDeletePoe, setPendingDeletePoe] = useState<{ cid: string; pid: string } | null>(null);
   const [toastMsg, setToastMsg] = useState('');
 
+  // ── REAL-TIME LISTENER ─────────────────────────────────────────────────────
+  // Subscribes to Firebase on mount. Any change made by any user anywhere
+  // triggers this callback and updates local state immediately.
+
+  useEffect(() => {
+    const collegesRef = ref(rtdb, 'colleges');
+
+    const unsubscribe = onValue(collegesRef, (snapshot) => {
+      const data = snapshot.val();
+
+      if (data === null) {
+        // Database is empty — this is a first-time setup.
+        // Seed Firebase with INITIAL_DATA so the app is not blank.
+        set(collegesRef, INITIAL_DATA);
+        setDb(JSON.parse(JSON.stringify(INITIAL_DATA)));
+      } else {
+        setDb(normaliseSnapshot(data));
+      }
+
+      setIsLoading(false);
+    });
+
+    // Cleanup: unsubscribe from Firebase when component unmounts.
+    return () => unsubscribe();
+  }, []);
+
+  // ── PERSIST ────────────────────────────────────────────────────────────────
+  // Every mutation goes through persist(). It updates local React state
+  // immediately (so the UI feels instant) and writes to Firebase
+  // (which triggers the onValue listener on all other connected clients).
+
   const persist = useCallback((newDb: College[]) => {
     setDb(newDb);
-    saveToStorage(newDb);
+    set(ref(rtdb, 'colleges'), newDb);
   }, []);
+
+  // ── TOAST ──────────────────────────────────────────────────────────────────
 
   const toast = useCallback((msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(''), 2500);
   }, []);
+
+  // ── UI STATE ───────────────────────────────────────────────────────────────
+  // These are purely local UI state — no Firebase involvement needed.
 
   const toggleRow = useCallback((cid: string) => {
     setExpandedRow(prev => prev === cid ? null : cid);
@@ -86,6 +130,8 @@ export function useCollegeStore() {
     setExpandedRow(cid);
     setPendingDeletePoe(null);
   }, []);
+
+  // ── COLLEGE CRUD ───────────────────────────────────────────────────────────
 
   const addCollege = useCallback((data: Omit<College, 'id' | 'poes'>) => {
     const newDb = [...db, { id: uid(), ...data, poes: [] }];
@@ -107,6 +153,8 @@ export function useCollegeStore() {
     toast('College deleted');
   }, [db, expandedRow, selectedPoe, persist, toast]);
 
+  // ── POE CRUD ───────────────────────────────────────────────────────────────
+
   const addPOE = useCallback((cid: string, data: Omit<POE, 'id'>) => {
     const newPoe = { id: uid(), ...data };
     const newDb = db.map(c => c.id === cid ? { ...c, poes: [...c.poes, newPoe] } : c);
@@ -117,7 +165,11 @@ export function useCollegeStore() {
   }, [db, persist, toast]);
 
   const updatePOE = useCallback((cid: string, pid: string, data: Partial<POE>) => {
-    const newDb = db.map(c => c.id === cid ? { ...c, poes: c.poes.map(p => p.id === pid ? { ...p, ...data, updatedAt: new Date().toISOString() } : p) } : c);
+    const newDb = db.map(c =>
+      c.id === cid
+        ? { ...c, poes: c.poes.map(p => p.id === pid ? { ...p, ...data, updatedAt: new Date().toISOString() } : p) }
+        : c
+    );
     persist(newDb);
     toast('Engagement updated');
   }, [db, persist, toast]);
@@ -130,6 +182,10 @@ export function useCollegeStore() {
     toast('Engagement deleted');
   }, [db, selectedPoe, persist, toast]);
 
+  // ── IMPORT ─────────────────────────────────────────────────────────────────
+  // When a JSON backup is imported, it overwrites Firebase entirely.
+  // All connected clients will see the new data immediately.
+
   const importData = useCallback((colleges: College[]) => {
     persist(migrateData(colleges));
     setExpandedRow(null);
@@ -137,10 +193,15 @@ export function useCollegeStore() {
     toast(`Imported ${colleges.length} colleges successfully`);
   }, [persist, toast]);
 
+  // ── RETURN ─────────────────────────────────────────────────────────────────
+
   return {
-    db, expandedRow, selectedPoe, pendingDeleteCollege, pendingDeletePoe, toastMsg,
-    toggleRow, selectPOE, addCollege, updateCollege, deleteCollege,
-    addPOE, updatePOE, deletePOE, importData,
+    db, isLoading,
+    expandedRow, selectedPoe, pendingDeleteCollege, pendingDeletePoe, toastMsg,
+    toggleRow, selectPOE,
+    addCollege, updateCollege, deleteCollege,
+    addPOE, updatePOE, deletePOE,
+    importData,
     setPendingDeleteCollege, setPendingDeletePoe, toast,
   };
 }
