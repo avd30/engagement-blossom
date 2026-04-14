@@ -31,12 +31,30 @@ const Index = () => {
     setTimelineOpenFor(prev => prev === cid ? null : cid);
   }, []);
 
+  const handleToggleRow = useCallback((cid: string) => {
+    // If collapsing the row, also close its timeline
+    if (store.expandedRow === cid) {
+      setTimelineOpenFor(prev => prev === cid ? null : prev);
+    }
+    store.toggleRow(cid);
+  }, [store]);
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     const list = store.db.filter(c => {
       if (q && !c.name.toLowerCase().includes(q) && !(c.notes || '').toLowerCase().includes(q)) return false;
       if (streamFilter && c.stream !== streamFilter) return false;
-      if (tierFilter && c.tier !== tierFilter) return false;
+      if (tierFilter) {
+        if (tierFilter === 'premier_iim') {
+          if (streamFilter === 'Engineering' && c.tier !== 'Premier') return false;
+          if (streamFilter === 'Management' && c.tier !== 'IIM') return false;
+          if (!streamFilter && c.tier !== 'Premier' && c.tier !== 'IIM') return false;
+        } else if (tierFilter === 'tier1_others') {
+          if (streamFilter === 'Engineering' && c.tier !== 'Tier 1') return false;
+          if (streamFilter === 'Management' && c.tier !== 'Others') return false;
+          if (!streamFilter && c.tier !== 'Tier 1' && c.tier !== 'Others') return false;
+        }
+      }
       if (statusFilter) {
         const hasStatus = c.poes.some(p => p.status === statusFilter);
         if (!hasStatus) return false;
@@ -171,7 +189,7 @@ const Index = () => {
             onStreamChange={setStreamFilter}
             onTierChange={setTierFilter}
             onStatusChange={setStatusFilter}
-            onToggleRow={store.toggleRow}
+            onToggleRow={handleToggleRow}
             onSelectPOE={store.selectPOE}
             onAddCollege={() => setCollegeModal({ open: true, college: null })}
             onEditCollege={cid => setCollegeModal({ open: true, college: store.db.find(c => c.id === cid) || null })}

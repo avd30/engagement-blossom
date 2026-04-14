@@ -95,7 +95,19 @@ export default function POEModal({ open, onClose, onSave, poe }: POEModalProps) 
             </div>
             <div>
               <label className="text-[11px] font-semibold text-muted-foreground block mb-1">End date <span className="font-normal text-text-hint">(optional)</span></label>
-              <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className={inputCls} min={date} />
+              <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className={inputCls} min={date} disabled={endDate === date && date !== ''} />
+              <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer text-[11px] text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={!!(date && endDate === date)}
+                  onChange={e => {
+                    if (e.target.checked && date) setEndDate(date);
+                    else setEndDate('');
+                  }}
+                  className="accent-primary"
+                />
+                Same as start date (1-day event)
+              </label>
             </div>
           </div>
 

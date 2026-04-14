@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { POE, getPOEType, formatDate, STATUS_COLORS } from '@/types/campus';
 
 interface POEDetailProps {
@@ -13,9 +14,16 @@ interface POEDetailProps {
 export default function POEDetail({ poe, onEdit, onAskDelete, onConfirmDelete, onCancelDelete, isPendingDelete, onMarkEngagement }: POEDetailProps) {
   const t = getPOEType(poe);
   const sc = STATUS_COLORS[poe.status || 'planned'];
+  const detailRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setTimeout(() => {
+      detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+  }, [poe.id]);
 
   return (
-    <div className="bg-surface border border-border rounded-xl p-4">
+    <div ref={detailRef} className="bg-surface border border-border rounded-xl p-4">
       <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="inline-flex items-center text-[10px] font-semibold px-[7px] py-[2px] rounded-md" style={{ background: t.bg, color: t.tx }}>{t.label}</span>
