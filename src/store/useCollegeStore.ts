@@ -112,7 +112,11 @@ export function useCollegeStore() {
 
   const persist = useCallback((newDb: College[]) => {
     setDb(newDb);
-    set(ref(rtdb, 'colleges'), newDb);
+    if (rtdb) {
+      set(ref(rtdb, 'colleges'), newDb);
+    } else {
+      localStorage.setItem('campusconnect-db', JSON.stringify(newDb));
+    }
   }, []);
 
   // ── TOAST ──────────────────────────────────────────────────────────────────
