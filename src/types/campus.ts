@@ -133,7 +133,8 @@ export function migratePOE(p: any): POE {
     reminderLeadDays: p.reminderLeadDays || 60,
     endDate: p.endDate || '',
     assignedTo: p.assignedTo || '',
-    report: p.report || undefined,
+    report: p.report || '',
+    notes: p.notes || '',
     createdAt: p.createdAt || new Date().toISOString(),
     updatedAt: p.updatedAt || new Date().toISOString(),
   };

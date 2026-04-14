@@ -73,37 +73,26 @@ export function useCollegeStore() {
   // ── REAL-TIME LISTENER ─────────────────────────────────────────────────────
   // Subscribes to Firebase on mount. Any change made by any user anywhere
   // triggers this callback and updates local state immediately.
+useEffect(() => {
+  if (!rtdb) { /* ... keep your existing fallback logic ... */ return; }
 
-  useEffect(() => {
-    if (!rtdb) {
-      // No Firebase — use localStorage fallback
-      const saved = localStorage.getItem('campusconnect-db');
-      if (saved) {
-        try { setDb(JSON.parse(saved)); } catch { setDb(INITIAL_DATA); }
-      } else {
-        setDb(INITIAL_DATA);
-      }
-      setIsLoading(false);
-      return;
+  const collegesRef = ref(rtdb, 'colleges');
+  const unsubscribe = onValue(collegesRef, (snapshot) => {
+    const data = snapshot.val();
+
+    if (data === null) {
+      // Clean INITIAL_DATA before sending to a fresh database
+      const cleanInitial = JSON.parse(JSON.stringify(INITIAL_DATA));
+      set(collegesRef, cleanInitial);
+      setDb(cleanInitial);
+    } else {
+      setDb(normaliseSnapshot(data));
     }
+    setIsLoading(false);
+  });
 
-    const collegesRef = ref(rtdb, 'colleges');
-
-    const unsubscribe = onValue(collegesRef, (snapshot) => {
-      const data = snapshot.val();
-
-      if (data === null) {
-        set(collegesRef, INITIAL_DATA);
-        setDb(JSON.parse(JSON.stringify(INITIAL_DATA)));
-      } else {
-        setDb(normaliseSnapshot(data));
-      }
-
-      setIsLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  return () => unsubscribe();
+}, []);
 
   // ── PERSIST ────────────────────────────────────────────────────────────────
   // Every mutation goes through persist(). It updates local React state
@@ -111,13 +100,17 @@ export function useCollegeStore() {
   // (which triggers the onValue listener on all other connected clients).
 
   const persist = useCallback((newDb: College[]) => {
-    setDb(newDb);
-    if (rtdb) {
-      set(ref(rtdb, 'colleges'), newDb);
-    } else {
-      localStorage.setItem('campusconnect-db', JSON.stringify(newDb));
-    }
-  }, []);
+  setDb(newDb);
+  if (rtdb) {
+    // This trick removes all 'undefined' properties that crash Firebase
+    const cleanData = JSON.parse(JSON.stringify(newDb));
+    set(ref(rtdb, 'colleges'), cleanData).catch((error) => {
+      console.error("Firebase Sync Error:", error);
+    });
+  } else {
+    localStorage.setItem('campusconnect-db', JSON.stringify(newDb));
+  }
+}, []);
 
   // ── TOAST ──────────────────────────────────────────────────────────────────
 
