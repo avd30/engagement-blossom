@@ -150,7 +150,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <TopBar onExportJSON={exportJSON} onImport={() => setImportOpen(true)} onExportCSV={exportCSV} />
+      <TopBar onExportJSON={exportJSON} onImport={() => setImportOpen(true)} onExportCSV={exportCSV} onImportExcel={() => setImportExcelOpen(true)} />
       <div className="max-w-main mx-auto p-3 sm:p-6">
         <div className="flex items-start justify-between mb-5 flex-wrap gap-3">
           <div>
@@ -243,6 +243,7 @@ const Index = () => {
         poe={markModal.poe}
       />
       <ImportModal open={importOpen} onClose={() => setImportOpen(false)} onImport={store.importData} />
+      <ImportModal open={importExcelOpen} onClose={() => setImportExcelOpen(false)} onImport={store.importData} mode="excel" />
       <Toast message={store.toastMsg} />
     </div>
   );
