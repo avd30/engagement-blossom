@@ -21,13 +21,14 @@ export default function POEModal({ open, onClose, onSave, poe }: POEModalProps) 
   const [notes, setNotes] = useState('');
   const [assignedTo, setAssignedTo] = useState('');
   const [reminderEnabled, setReminderEnabled] = useState(true);
+  const [sameAsStart, setSameAsStart] = useState(false);
   const [reminderLeadDays, setReminderLeadDays] = useState(60);
 
   useEffect(() => {
     if (poe) {
       setType(poe.type); setCustomType(poe.customType || '');
       setEventDetail(poe.eventDetail || ''); setDate(poe.date || '');
-      setEndDate(poe.endDate || '');
+      setEndDate(poe.endDate || ''); setSameAsStart(!!(poe.date && poe.endDate && poe.date === poe.endDate));
       setLink(poe.link || ''); setPocName(poe.pocName || '');
       setPocEmail(poe.pocEmail || ''); setPocPhone(poe.pocPhone || '');
       setNotes(poe.notes || '');
@@ -39,6 +40,7 @@ export default function POEModal({ open, onClose, onSave, poe }: POEModalProps) 
       setEventDetail(''); setDate(''); setEndDate(''); setLink('');
       setPocName(''); setPocEmail(''); setPocPhone(''); setNotes('');
       setAssignedTo(''); setReminderEnabled(true); setReminderLeadDays(60);
+      setSameAsStart(false);
     }
   }, [poe, open]);
 
