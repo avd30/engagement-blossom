@@ -36,8 +36,12 @@ const Index = () => {
     if (store.expandedRow === cid) {
       setTimelineOpenFor(prev => prev === cid ? null : prev);
     }
+    // Close timeline when collapsing via arrow toggle
+    if (timelineOpenFor === cid && store.expandedRow === cid) {
+      setTimelineOpenFor(null);
+    }
     store.toggleRow(cid);
-  }, [store]);
+  }, [store, timelineOpenFor]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
