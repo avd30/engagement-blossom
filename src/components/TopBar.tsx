@@ -4,9 +4,10 @@ interface TopBarProps {
   onExportJSON: () => void;
   onImport: () => void;
   onExportCSV: () => void;
+  onImportExcel: () => void;
 }
 
-export default function TopBar({ onExportJSON, onImport, onExportCSV }: TopBarProps) {
+export default function TopBar({ onExportJSON, onImport, onExportCSV, onImportExcel }: TopBarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -20,6 +21,7 @@ export default function TopBar({ onExportJSON, onImport, onExportCSV }: TopBarPr
           <button onClick={onExportJSON} className="bg-white/15 text-primary-foreground border border-white/25 rounded-xl px-3.5 py-[6px] text-xs cursor-pointer transition-colors hover:bg-white/25 backdrop-blur-sm">Export backup</button>
           <button onClick={onImport} className="bg-white/15 text-primary-foreground border border-white/25 rounded-xl px-3.5 py-[6px] text-xs cursor-pointer transition-colors hover:bg-white/25 backdrop-blur-sm">Import backup</button>
           <button onClick={onExportCSV} className="bg-white/15 text-primary-foreground border border-white/25 rounded-xl px-3.5 py-[6px] text-xs cursor-pointer transition-colors hover:bg-white/25 backdrop-blur-sm">Export Excel</button>
+          <button onClick={onImportExcel} className="bg-white/15 text-primary-foreground border border-white/25 rounded-xl px-3.5 py-[6px] text-xs cursor-pointer transition-colors hover:bg-white/25 backdrop-blur-sm">Import Excel</button>
         </div>
         <button className="sm:hidden ml-auto bg-white/15 text-primary-foreground border border-white/25 rounded-xl px-[10px] py-[6px] text-lg leading-none cursor-pointer" onClick={() => setMenuOpen(!menuOpen)}>&#8942;</button>
       </div>
@@ -28,6 +30,7 @@ export default function TopBar({ onExportJSON, onImport, onExportCSV }: TopBarPr
           <button onClick={() => { onExportJSON(); setMenuOpen(false); }} className="bg-white/15 text-primary-foreground border border-white/25 rounded-xl px-3 py-2 text-xs text-left w-full cursor-pointer hover:bg-white/25">Export backup</button>
           <button onClick={() => { onImport(); setMenuOpen(false); }} className="bg-white/15 text-primary-foreground border border-white/25 rounded-xl px-3 py-2 text-xs text-left w-full cursor-pointer hover:bg-white/25">Import backup</button>
           <button onClick={() => { onExportCSV(); setMenuOpen(false); }} className="bg-white/15 text-primary-foreground border border-white/25 rounded-xl px-3 py-2 text-xs text-left w-full cursor-pointer hover:bg-white/25">Export Excel</button>
+          <button onClick={() => { onImportExcel(); setMenuOpen(false); }} className="bg-white/15 text-primary-foreground border border-white/25 rounded-xl px-3 py-2 text-xs text-left w-full cursor-pointer hover:bg-white/25">Import Excel</button>
         </div>
       )}
     </>

@@ -21,13 +21,14 @@ export default function POEModal({ open, onClose, onSave, poe }: POEModalProps) 
   const [notes, setNotes] = useState('');
   const [assignedTo, setAssignedTo] = useState('');
   const [reminderEnabled, setReminderEnabled] = useState(true);
+  const [sameAsStart, setSameAsStart] = useState(false);
   const [reminderLeadDays, setReminderLeadDays] = useState(60);
 
   useEffect(() => {
     if (poe) {
       setType(poe.type); setCustomType(poe.customType || '');
       setEventDetail(poe.eventDetail || ''); setDate(poe.date || '');
-      setEndDate(poe.endDate || '');
+      setEndDate(poe.endDate || ''); setSameAsStart(!!(poe.date && poe.endDate && poe.date === poe.endDate));
       setLink(poe.link || ''); setPocName(poe.pocName || '');
       setPocEmail(poe.pocEmail || ''); setPocPhone(poe.pocPhone || '');
       setNotes(poe.notes || '');
@@ -39,6 +40,7 @@ export default function POEModal({ open, onClose, onSave, poe }: POEModalProps) 
       setEventDetail(''); setDate(''); setEndDate(''); setLink('');
       setPocName(''); setPocEmail(''); setPocPhone(''); setNotes('');
       setAssignedTo(''); setReminderEnabled(true); setReminderLeadDays(60);
+      setSameAsStart(false);
     }
   }, [poe, open]);
 
@@ -91,18 +93,19 @@ export default function POEModal({ open, onClose, onSave, poe }: POEModalProps) 
           <div className="mb-3 grid grid-cols-1 sm:grid-cols-2 gap-[10px]">
             <div>
               <label className="text-[11px] font-semibold text-muted-foreground block mb-1">Start date *</label>
-              <input type="date" value={date} onChange={e => { const v = e.target.value; setDate(v); if (endDate === date) setEndDate(v); }} className={inputCls} />
+              <input type="date" value={date} onChange={e => setDate(e.target.value)} className={inputCls} />
             </div>
             <div>
               <label className="text-[11px] font-semibold text-muted-foreground block mb-1">End date <span className="font-normal text-text-hint">(optional)</span></label>
-              <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className={inputCls} min={date} disabled={endDate === date && date !== ''} />
+              <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className={inputCls} min={date} disabled={sameAsStart} />
               <label className="flex items-center gap-1.5 mt-1.5 cursor-pointer text-[11px] text-muted-foreground">
                 <input
                   type="checkbox"
-                  checked={!!(date && endDate === date)}
+                  checked={sameAsStart}
                   onChange={e => {
+                    setSameAsStart(e.target.checked);
                     if (e.target.checked && date) setEndDate(date);
-                    else setEndDate('');
+                    else if (!e.target.checked) setEndDate('');
                   }}
                   className="accent-primary"
                 />

@@ -23,6 +23,7 @@ const Index = () => {
   const [poeModal, setPoeModal] = useState<{ open: boolean; cid: string; poe: any }>({ open: false, cid: '', poe: null });
   const [markModal, setMarkModal] = useState<{ open: boolean; cid: string; poe: any }>({ open: false, cid: '', poe: null });
   const [importOpen, setImportOpen] = useState(false);
+  const [importExcelOpen, setImportExcelOpen] = useState(false);
   const [timelineOpenFor, setTimelineOpenFor] = useState<string | null>(null);
   const [prioritizedCollegeId, setPrioritizedCollegeId] = useState<string | null>(null);
   const tableRef = useRef<HTMLDivElement>(null);
@@ -36,8 +37,12 @@ const Index = () => {
     if (store.expandedRow === cid) {
       setTimelineOpenFor(prev => prev === cid ? null : prev);
     }
+    // Close timeline when collapsing via arrow toggle
+    if (timelineOpenFor === cid && store.expandedRow === cid) {
+      setTimelineOpenFor(null);
+    }
     store.toggleRow(cid);
-  }, [store]);
+  }, [store, timelineOpenFor]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -145,7 +150,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <TopBar onExportJSON={exportJSON} onImport={() => setImportOpen(true)} onExportCSV={exportCSV} />
+      <TopBar onExportJSON={exportJSON} onImport={() => setImportOpen(true)} onExportCSV={exportCSV} onImportExcel={() => setImportExcelOpen(true)} />
       <div className="max-w-main mx-auto p-3 sm:p-6">
         <div className="flex items-start justify-between mb-5 flex-wrap gap-3">
           <div>
@@ -238,6 +243,7 @@ const Index = () => {
         poe={markModal.poe}
       />
       <ImportModal open={importOpen} onClose={() => setImportOpen(false)} onImport={store.importData} />
+      <ImportModal open={importExcelOpen} onClose={() => setImportExcelOpen(false)} onImport={store.importData} mode="excel" />
       <Toast message={store.toastMsg} />
     </div>
   );
