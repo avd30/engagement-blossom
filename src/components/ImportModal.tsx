@@ -62,7 +62,6 @@ function parseExcelToColleges(wb: XLSX.WorkBook): College[] {
         notes: g(row, iCollegeNotes),
         nirf: null,
         poes: [],
-        timeline: [],
       });
     }
 
