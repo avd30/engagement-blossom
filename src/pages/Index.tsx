@@ -23,6 +23,7 @@ const Index = () => {
   const [poeModal, setPoeModal] = useState<{ open: boolean; cid: string; poe: any }>({ open: false, cid: '', poe: null });
   const [markModal, setMarkModal] = useState<{ open: boolean; cid: string; poe: any }>({ open: false, cid: '', poe: null });
   const [importOpen, setImportOpen] = useState(false);
+  const [importExcelOpen, setImportExcelOpen] = useState(false);
   const [timelineOpenFor, setTimelineOpenFor] = useState<string | null>(null);
   const [prioritizedCollegeId, setPrioritizedCollegeId] = useState<string | null>(null);
   const tableRef = useRef<HTMLDivElement>(null);
